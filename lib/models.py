@@ -24,6 +24,8 @@ class Item(Base):
 
     category_id = Column(Integer(), ForeignKey('categories.id'))
 
+    stock_level = relationship("StockLevel", backref="item")
+
     @classmethod
     def all_items(cls):
         items = session.query(cls).all()
@@ -46,12 +48,19 @@ class Item(Base):
         session.add(new_stock)
         session.commit()
     @classmethod
-    def delete_item(cls, item_name):
-        item = session.query(cls).filter_by(name = item_name).first()
+    def delete_item(cls, item_name=None, item_id=None):
+        if item_name:
+            item = session.query(cls).filter_by(name = item_name).first()
+        if item_id:
+            item = session.query(cls).filter_by(id = item_id).first()
         if item:
+            stocks_level = session.query(StockLevel).filter_by(id = item.id).first()
             session.delete(item)
+            session.delete(stocks_level)
             session.commit()
-            print(f"Item has {item_name} been deleted")
+            print(f"Item has been deleted")
+        else:
+            print(f"Item not found in database.")
 
     def __repr__(self):
         return f'<Item: id = {self.id}, ' + \
@@ -65,6 +74,10 @@ class Category(Base):
     id = Column(Integer(), primary_key=True)
     name = Column(String(), nullable=False)
 
+    def __repr__(self):
+        return f'<Category: id = {self.id}, ' + \
+            f'name = {self.name}>'
+
 class StockLevel(Base):
     __tablename__ = 'stocklevels'
 
@@ -73,7 +86,11 @@ class StockLevel(Base):
     quantity = Column(Integer(), nullable=False)
     created_at = Column(DateTime(), default=datetime.now)
     updated_at = Column(DateTime(), default=datetime.now, onupdate=func.now())
-    
 
+    def __repr__(self):
+        return f'<StockLevel: id = {self.id}, ' + \
+            f'item_id = {self.item_id}, ' + \
+            f'quantity = {self.quantity}>'
+    
 # class Supplier(Base):
 #     pass
