@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Item, Category, StockLevel
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///freebies.db')
+    engine = create_engine('sqlite:///inventories.db')
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     categories = [
         Category(name = 'Electronics'),
         Category(name = 'Books'),
-        Category(name = 'Clothing'),
+        Category(name = 'Fashion'),
         Category(name = 'Home Appliances'),
         Category(name = 'Toys'),
     ]
