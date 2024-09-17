@@ -9,6 +9,7 @@ sqlalchemy = "*"
 faker = "*"
 ipdb = "*"
 prettytable = "*"
+colorama = "*"
 
 [dev-packages]
 
