@@ -15,6 +15,14 @@ engine = create_engine('sqlite:///inventories.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
+item_supplier = Table(
+    'item_suppliers',
+    Base.metadata,
+    Column('item_id', ForeignKey('items.id'), primary_key=True),
+    Column('supplier_id', ForeignKey('suppliers.id'), primary_key=True),
+    extend_existing=True,
+)
+
 class Item(Base):
     __tablename__ = 'items'
 
@@ -25,6 +33,8 @@ class Item(Base):
     category_id = Column(Integer(), ForeignKey('categories.id'))
 
     stock_level = relationship("StockLevel", backref="item")
+
+    suppliers = relationship('Supplier', secondary=item_supplier, back_populates='items')
 
     @classmethod
     def all_items(cls):
@@ -64,6 +74,9 @@ class Item(Base):
         else:
             print(f"Item not found in database.")
     
+    def item_suppliers(self):
+        return self.suppliers
+    
     def __repr__(self):
         return f'<Item: id = {self.id}, ' + \
             f'name = {self.name}, ' + \
@@ -76,8 +89,10 @@ class Category(Base):
     id = Column(Integer(), primary_key=True)
     name = Column(String(), nullable=False)
 
+    items = relationship("Item", backref="category")
+
     def items_in_category(self):
-        return self.id
+        return self.items
 
     def __repr__(self):
         return f'<Category: id = {self.id}, ' + \
@@ -124,5 +139,25 @@ class StockLevel(Base):
             f'item_id = {self.item_id}, ' + \
             f'quantity = {self.quantity}>'
     
-# class Supplier(Base):
-#     pass
+class Supplier(Base):
+    __tablename__ = 'suppliers'
+
+    id = Column(Integer(), primary_key = True)
+    name = Column(String())
+    contact = Column(String())
+
+    items = relationship('Item', secondary=item_supplier, back_populates='suppliers')
+
+    @classmethod
+    def add_supplier(self):
+        new_supplier = Supplier(name = 'Shein', contact = '25-360-479')
+        session.add(new_supplier)
+        session.commit()
+
+    def items_supplied(self):
+        self.items
+
+    def __repr__(self):
+        return f'<Supplier: id = {self.id}, ' + \
+            f'name = {self.name}, ' + \
+            f'contact = {self.contact}>'

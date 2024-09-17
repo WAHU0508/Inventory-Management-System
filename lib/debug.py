@@ -3,7 +3,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Item, Category, StockLevel
+from models import Item, Category, StockLevel, Supplier
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///inventories.db')
