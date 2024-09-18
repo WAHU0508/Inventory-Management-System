@@ -77,6 +77,13 @@ class Item(Base):
     def item_suppliers(self):
         return self.suppliers
     
+    def write_order_if_stock_low(self, supply_orders):
+        with open('orders.txt', 'a') as order_file:
+            for supplier_id, quantity in supply_orders:
+                for supplier in self.suppliers:
+                    if supplier_id == supplier.id:
+                        order_file.write(f"Order for {self.name} from {supplier.name} contact: '{supplier.contact}' - {quantity} pieces\n")
+
     def __repr__(self):
         return f'<Item: id = {self.id}, ' + \
             f'name = {self.name}, ' + \
@@ -93,6 +100,7 @@ class Category(Base):
 
     def items_in_category(self):
         return self.items
+    
 
     def __repr__(self):
         return f'<Category: id = {self.id}, ' + \
@@ -134,6 +142,7 @@ class StockLevel(Base):
             stocks.quantity -= value
             session.commit()    
  
+
     def __repr__(self):
         return f'<StockLevel: id = {self.id}, ' + \
             f'item_id = {self.item_id}, ' + \

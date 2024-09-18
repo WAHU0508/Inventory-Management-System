@@ -18,7 +18,7 @@ if __name__ == '__main__':
         Category(name = 'Books'),
         Category(name = 'Fashion'),
         Category(name = 'Home Appliances'),
-        Category(name = 'Toys'),
+        Category(name = 'Kids'),
     ]
     session.add_all(categories)
     session.commit()

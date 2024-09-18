@@ -1,4 +1,4 @@
-from models import Item, Category, StockLevel
+from models import Item, Category, StockLevel, Supplier
 from prettytable import PrettyTable
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -12,7 +12,8 @@ init(autoreset=True)
 
 def heading():
     print(f"{Fore.CYAN}                                          AMAZON WAREHOUSE INVENTORY MANAGEMENT SYSTEM")
-    print("------------------------------------------------------------------------------------------------------------------------")
+    print("------------------------------------------------------------------------------------------------------------------------\n")
+
 def exit_program():
     print(f"{Fore.GREEN}Goodbye!!!!")
     exit()
@@ -44,7 +45,7 @@ def add_item():
 def delete_item_by_name():
     name = input("    Enter the name of the item to be deleted: ")
     item_to_be_deleted = session.query(Item).filter_by(name = name).first()
-    confirmation = input("Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
+    confirmation = input(f"Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
     if confirmation == 'yes':
         Item.delete_item(item_name = name)
     else:
@@ -53,7 +54,7 @@ def delete_item_by_name():
 def delete_item_by_id():
     id = input("    Enter the id of the item to be deleted: ")
     item_to_be_deleted = session.query(Item).filter_by(id = id).first()
-    confirmation = input("Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
+    confirmation = input(f"Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
     if confirmation == 'yes':
         Item.delete_item(item_id = id)
     else:
@@ -100,3 +101,47 @@ def decrease_stocks():
         StockLevel.decrease_stocks_level(id, int(value))
     else:
         print(f"{Fore.LIGHTYELLOW_EX}***The order is more than the available stock***")
+
+def get_item_suppliers():
+    id = input("Enter the id of item to check it's suppliers. ")
+    item = session.query(Item).filter_by(id = id).first()
+    suppliers = item.item_suppliers()
+    for supplier in suppliers:
+        print(f"Supplier's name: {supplier.name} Supplier's contact: {supplier.contact}")
+
+def get_all_suppliers():
+    suppliers = session.query(Supplier).all()
+
+    table = PrettyTable(['Name', 'Contact'])
+
+    for supplier in suppliers:
+        table.add_row([supplier.name, supplier.contact])
+
+    print(table)
+
+def write_order():
+    id = input("Enter id of item whose order is to be written. ")
+    item = session.query(Item).filter_by(id = id).first()
+    suppliers = item.suppliers
+    print(f"item: {item.name}, id: {item.id} has suppliers:")
+    for supplier in suppliers:
+        print(f"id: {supplier.id}, name: {supplier.name}")
+    orders = input("Enter oder in the format <id:quantity, id:quantity>: ")
+    supply_order = [(int(supplier_id), int(quantity))
+                    for supplier_id, quantity in (pair.split(':') for pair in orders.split(','))
+                    ]
+    item.write_order_if_stock_low(supply_order)
+    print("The order has successfully been written!!!!")
+
+def item_category():
+    id = input("Enter id of item to get it's category. ")
+    item = session.query(Item).filter_by(id = id).first()
+    print(f"id: {item.id} name: {item.name} category: {item.category.name}")
+
+def category_items():
+    name = input("Enter name of category to get items. ")
+    category = session.query(Category).filter_by(name = name).first()
+    items = category.items
+    print(f"Items in the {category.name} category")
+    for item in items:
+        print(f"id: {item.id} name: {item.name} price: {item.price}")
