@@ -14,7 +14,8 @@ from helpers import (
     get_all_suppliers,
     write_order,
     item_category,
-    category_items
+    category_items,
+    generate_inventory_report
 )
 
 def main():
@@ -28,21 +29,36 @@ def main():
         elif choice == "1":
             list_items()
         elif choice == '2':
-            add_item()
-        elif choice == '3':
-            print("DELETE ITEM BY NAME OR BY ID:")
+            print("ADD, UPDATE OR DELETE AN ITEM>")
             print("    0. Back to previous menu")
-            print("    1. Delete by name")
-            print("    2. Delete by id")
+            print("    1. Add new item")
+            print("    2. Update an item")
+            print("    3. Delete an item")
             choice = input(">>>> ")
             if choice == "0":
                 menu()
             elif choice == "1":
-                delete_item_by_name()
+                add_item()
             elif choice == "2":
-                delete_item_by_id()
+                pass
+            elif choice == "3":
+                print("DELETE ITEM BY NAME OR BY ID:")
+                print("    0. Back to previous menu")
+                print("    1. Delete by name")
+                print("    2. Delete by id")
+                choice = input(">>>> ")
+                if choice == "0":
+                    menu()
+                elif choice == "1":
+                    delete_item_by_name()
+                elif choice == "2":
+                    delete_item_by_id()
+                else:
+                    print("Invalid choice.")
             else:
                 print("Invalid choice.")
+        elif choice == '3':
+            pass
         elif choice == '4':
             print("GET AN ITEM'S STOCK LEVEL:")
             print("    0. Back to previous menu")
@@ -98,7 +114,7 @@ def menu():
     print("Please select an option: ")
     print("0. Exit the program.")
     print("1. List all the items.")
-    print("2. Add new item.")
+    print("2. Add, update or delete item.")
     print("3. Delete an item.")
     print("4. Get item's stock level.")
     print("5. Update stocks.")

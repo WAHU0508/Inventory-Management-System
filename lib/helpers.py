@@ -122,9 +122,11 @@ def get_all_suppliers():
 
 def write_order():
     id = input("Enter id of item whose order is to be written. ")
+
     item = session.query(Item).filter_by(id = id).first()
     if not item :
         print(f"Item with ID {id} not found.")
+        return
 
     suppliers = item.suppliers
     print(f"item: {item.name}, id: {item.id} has suppliers:")
@@ -137,22 +139,16 @@ def write_order():
                     ]
     table = PrettyTable()
     table.field_names = ["Item ID", "Item Name", "Supplier_name", "Supplier_Contact", "Order Quantity"]
-    if os.path.exists('orders.txt'):
-        with open('orders.txt', 'r') as order_file:
-            existing_data = order_file.read()
-            if existing_data.strip():
-                table = PrettyTable(existing_data.splitlines()[1].split())
+
     for supplier_id, quantity in supply_orders:
         for supplier in item.suppliers:
             if supplier_id == supplier.id:
                 table.add_row([item.id, item.name, supplier.name, supplier.contact, quantity])
     
     with open('orders.txt', 'a') as order_file:
-        order_file.write(str(table) + "\n")
-    
-    print(table)
-
-write_order()
+        text = f"An order for <id: {item.id} name: {item.name}>"
+        order_file.write(text.upper() + "\n")
+        order_file.write(table.get_string() + "\n" + "\n")
 
 def item_category():
     id = input("Enter id of item to get it's category. ")
