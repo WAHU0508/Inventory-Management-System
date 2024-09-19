@@ -20,6 +20,7 @@ def exit_program():
     exit()
 
 def list_items():
+    """List all items in a table form"""
     items = Item.all_items()
     table = PrettyTable(['id', 'Name', 'Price', 'StockLevel'])
 
@@ -31,6 +32,7 @@ def list_items():
     print(table)
 
 def add_item():
+    """"Create a new item and give it a category and a supplier"""
     name = input("    Enter the name of the new item: ")
     price = input("    Enter the price of the new item: ")
     category_name = input("    Enter the category name of the new item: ")
@@ -55,18 +57,8 @@ def add_item():
         print(f"{Fore.RED}Error adding new item. Please Try Again.")
     
 
-def new_item_supplier():
-    id = input("Enter id of item to add new supplier: ")
-    supplier_name = input("Enter supplier's name: ")
-    supplier_contact = input("Enter supplier's contact: ")
-    item = session.query(Item).filter_by(id = id).first()
-    if item:
-        item.add_supplier_to_item(supplier_name, supplier_contact)
-        print(f"{Fore.GREEN}Supplier {supplier_name} successfully added to item ID: {item.id}.")
-    else:
-        print(f"{Fore.RED}Item with ID {id} not found.")
-
 def delete_item_by_name():
+    """Delete an item by it's name"""
     name = input("    Enter the name of the item to be deleted: ")
     item_to_be_deleted = session.query(Item).filter_by(name = name).first()
     if item_to_be_deleted:
@@ -80,6 +72,7 @@ def delete_item_by_name():
         print(f"{Fore.RED} Item with name {name} cannot be found.")
 
 def delete_item_by_id():
+    """Delete an item by it's ID"""
     id = input("    Enter the id of the item to be deleted: ")
     item_to_be_deleted = session.query(Item).filter_by(id = id).first()
     if item_to_be_deleted:
@@ -93,6 +86,7 @@ def delete_item_by_id():
        print(f"{Fore.RED} Item with ID {id} cannot be found.") 
 
 def get_stock_level_by_name():
+    """Get item stocklevel by name"""
     name = input("    Enter the item_name to get it's stock level.")
     item = session.query(Item).filter_by(name = name).first()
     stocks = session.query(StockLevel).filter_by(item_id = item.id).first()
@@ -102,6 +96,7 @@ def get_stock_level_by_name():
         print("Item not found.")
 
 def get_stock_level_by_id():
+    """Get item's stocklevel by entering it's ID"""
     id = input("    Enter the item_id to get it's stock level.")
     item = session.query(Item).filter_by(id = id).first()
     stocks = session.query(StockLevel).filter_by(item_id = id).first()
@@ -111,6 +106,7 @@ def get_stock_level_by_id():
         print("Item not found.")
 
 def items_below_stock():
+    """Get items below theshold value and display them"""
     print(f"{Fore.RED}**********NOTIFICATIONS - LOW STOCKS < 50!!!**********")
     low_stocks = StockLevel.get_items_below_threshold()
     for item in low_stocks:
@@ -118,6 +114,7 @@ def items_below_stock():
             print(f"{Fore.LIGHTRED_EX}> id: {item.id}: {item.name} stockslevel is at {stock.quantity}")
 
 def increase_stocks():
+    """Increase an item's stocks"""
     id = input("Enter the id of item to be updated. ")
     value = input("Enter the number of new stocks added: ")
     item = session.query(Item).filter_by(id = id).first()
@@ -126,6 +123,7 @@ def increase_stocks():
         print(f"{Fore.GREEN} Stock level of item<id: {item.id}, name: {item.name}> increased to {[stock.quantity for stock in item.stock_level]}")
 
 def decrease_stocks():
+    """Decrease an item's stocks"""
     id = input("Enter the id of item to be updated. ")
     value = input("Enter the amount decrease in stocks: ")
     item = session.query(Item).filter_by(id = id).first()
@@ -137,6 +135,7 @@ def decrease_stocks():
         print(f"{Fore.LIGHTYELLOW_EX}***The order is more than the available stock***")
 
 def get_item_suppliers():
+    """Get an item's suppliers"""
     id = input("Enter the id of item to check it's suppliers. ")
     item = session.query(Item).filter_by(id = id).first()
     suppliers = item.item_suppliers()
@@ -146,6 +145,7 @@ def get_item_suppliers():
     print(table)
 
 def get_all_suppliers():
+    """Get all supplier's details and display in a table"""
     suppliers = session.query(Supplier).all()
 
     table = PrettyTable(['Name', 'Contact'])
@@ -156,9 +156,8 @@ def get_all_suppliers():
     print(table)
 
 
-
-
 def write_order():
+    """Write an order and write it in a file."""
     id = input("Enter id of item whose order is to be written. ")
 
     item = session.query(Item).filter_by(id = id).first()
@@ -175,6 +174,8 @@ def write_order():
     supply_orders = [(int(supplier_id), int(quantity))
                     for supplier_id, quantity in (pair.split(':') for pair in orders.split(','))
                     ]
+    
+    """Create a table to display information"""
     table = PrettyTable()
     table.field_names = ["Item ID", "Item Name", "Supplier_name", "Supplier_Contact", "Order Quantity"]
 
@@ -189,11 +190,13 @@ def write_order():
         order_file.write(table.get_string() + "\n" + "\n")
 
 def item_category():
+    """Get an item's category"""
     id = input("Enter id of item to get it's category. ")
     item = session.query(Item).filter_by(id = id).first()
     print(f"{Fore.YELLOW}id: {item.id} name: {item.name} category: {item.category.name}")
 
 def category_items():
+    """Get all items in a category"""
     name = input("Enter name of category to get items. ")
     category = session.query(Category).filter_by(name = name).first()
     items = category.items
@@ -202,6 +205,7 @@ def category_items():
         print(f"{Fore.YELLOW}id: {item.id} name: {item.name} price: {item.price}")
 
 def generate_inventory_report():
+    """Generate an inventory report and write it in table form in a file."""
     items = session.query(Item).options(
         joinedload(Item.category),
         joinedload(Item.stock_level),
@@ -224,6 +228,7 @@ def generate_inventory_report():
         report_file.write(str(table))
 
 def update_item_by_id():
+    """Update an item's details by entering it's ID"""
     id = input("Enter id of item to be updated. ")
     item = session.query(Item).filter_by(id = id).first()
 

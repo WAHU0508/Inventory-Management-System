@@ -16,6 +16,7 @@ engine = create_engine('sqlite:///inventories.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
+"""Item_suppliers association table"""
 item_supplier = Table(
     'item_suppliers',
     Base.metadata,
@@ -25,27 +26,30 @@ item_supplier = Table(
 )
 
 class Item(Base):
+    """Create items table"""
     __tablename__ = 'items'
 
     id = Column(Integer(), primary_key=True)
     name = Column(String(), nullable=False)
     price = Column(DECIMAL(10, 2), nullable=False)
-
     category_id = Column(Integer(), ForeignKey('categories.id'))
-
+    
+    """one to one relationship"""
     stock_level = relationship("StockLevel", backref="item")
-
+    """many to many relationship"""
     suppliers = relationship('Supplier', secondary=item_supplier, back_populates='items')
 
     @classmethod
     def all_items(cls):
+        """Method to get all items"""
         items = session.query(cls).all()
         return items
     
     @classmethod
     def add_item(cls, name, price, category_name, quantity):
+        """Method to add a new item and give it a category"""
         category = session.query(Category).filter_by(name = category_name).first()
-
+        """If the category name doesn't exist, create a new category"""
         if not category:
             new_category = Category(name = category_name)
             session.add(new_category)
@@ -61,6 +65,7 @@ class Item(Base):
 
     @classmethod
     def delete_item(cls, item_name=None, item_id=None):
+        """Method to delete an item be name or by id."""
         if item_name:
             item = session.query(cls).filter_by(name = item_name).first()
         if item_id:
@@ -72,9 +77,11 @@ class Item(Base):
             session.commit()
     
     def item_suppliers(self):
+        """get an item's suppliers"""
         return self.suppliers
     
     def update_item(self, name=None, price=None, category_id=None):
+        """Update an item's name, price or category id"""
         if name is not None:
             self.name = name
         if price is not None:
@@ -84,10 +91,6 @@ class Item(Base):
         session.commit()
         print(f"Item ID: {self.id} updated successfully.")
 
-    # def add_supplier_to_item(self, supplier_name, supplier_contact):
-    #     new_supplier = Supplier.add_supplier(supplier_name, supplier_contact)
-    #     self.suppliers.append(new_supplier)
-    #     session.commit()
 
     def __repr__(self):
         return f'<Item: id = {self.id}, ' + \
@@ -96,6 +99,7 @@ class Item(Base):
     
 
 class Category(Base):
+    """Create a categories table"""
     __tablename__ = 'categories'
 
     id = Column(Integer(), primary_key=True)
@@ -104,6 +108,7 @@ class Category(Base):
     items = relationship("Item", backref="category")
 
     def items_in_category(self):
+        """method to get items in a category"""
         return self.items
     
 
@@ -112,6 +117,7 @@ class Category(Base):
             f'name = {self.name}>'
 
 class StockLevel(Base):
+    """Create stocklevels table"""
     __tablename__ = 'stocklevels'
     
     id = Column(Integer(), primary_key=True)
@@ -122,6 +128,7 @@ class StockLevel(Base):
 
     @classmethod
     def get_items_below_threshold(cls):
+        """"Get items whose stocklevels are below threshold valu"""
         low_stock = session.query(cls).filter(cls.quantity < 50).all()
 
         low_stocked_items = []
@@ -135,6 +142,7 @@ class StockLevel(Base):
     
     @classmethod
     def increase_stocks_level(cls, item_id, value = 0):
+        """Increase stocks of item by a given value"""
         stocks = session.query(cls).filter_by(item_id = item_id).first()
         if stocks:
             stocks.quantity += value
@@ -142,6 +150,7 @@ class StockLevel(Base):
 
     @classmethod
     def decrease_stocks_level(cls, item_id, value = 0):
+        """Decrease stocks of item by a given value"""
         stocks = session.query(cls).filter_by(item_id = item_id).first()
         if stocks:
             stocks.quantity -= value
@@ -154,6 +163,7 @@ class StockLevel(Base):
             f'quantity = {self.quantity}>'
     
 class Supplier(Base):
+    """Create suppliers table"""
     __tablename__ = 'suppliers'
 
     id = Column(Integer(), primary_key = True)
@@ -164,11 +174,13 @@ class Supplier(Base):
 
     @classmethod
     def add_supplier(self, name, contact):
+        """Create a new supplier"""
         new_supplier = Supplier(name = name, contact = contact)
         session.add(new_supplier)
         session.commit()
 
     def items_supplied(self):
+        """Get items supplied by a supplier"""
         self.items
 
     def __repr__(self):

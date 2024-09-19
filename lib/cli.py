@@ -16,8 +16,7 @@ from helpers import (
     item_category,
     category_items,
     update_item_by_id,
-    generate_inventory_report,
-    new_item_supplier
+    generate_inventory_report
 )
 
 def main():
