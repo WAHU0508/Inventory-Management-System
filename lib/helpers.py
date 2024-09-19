@@ -87,7 +87,7 @@ def delete_item_by_id():
 
 def get_stock_level_by_name():
     """Get item stocklevel by name"""
-    name = input("    Enter the item_name to get it's stock level.")
+    name = input("    Enter the item_name to get it's stock level: ")
     item = session.query(Item).filter_by(name = name).first()
     stocks = session.query(StockLevel).filter_by(item_id = item.id).first()
     if item:
@@ -97,7 +97,7 @@ def get_stock_level_by_name():
 
 def get_stock_level_by_id():
     """Get item's stocklevel by entering it's ID"""
-    id = input("    Enter the item_id to get it's stock level.")
+    id = input("    Enter the item_id to get it's stock level: ")
     item = session.query(Item).filter_by(id = id).first()
     stocks = session.query(StockLevel).filter_by(item_id = id).first()
     if item:
@@ -115,7 +115,7 @@ def items_below_stock():
 
 def increase_stocks():
     """Increase an item's stocks"""
-    id = input("Enter the id of item to be updated. ")
+    id = input("Enter the id of item to be updated: ")
     value = input("Enter the number of new stocks added: ")
     item = session.query(Item).filter_by(id = id).first()
     if item:
@@ -124,7 +124,7 @@ def increase_stocks():
 
 def decrease_stocks():
     """Decrease an item's stocks"""
-    id = input("Enter the id of item to be updated. ")
+    id = input("Enter the id of item to be updated: ")
     value = input("Enter the amount decrease in stocks: ")
     item = session.query(Item).filter_by(id = id).first()
     stocks = session.query(StockLevel).filter_by(item_id = id).first()
@@ -136,7 +136,7 @@ def decrease_stocks():
 
 def get_item_suppliers():
     """Get an item's suppliers"""
-    id = input("Enter the id of item to check it's suppliers. ")
+    id = input("Enter the id of item to check it's suppliers: ")
     item = session.query(Item).filter_by(id = id).first()
     suppliers = item.item_suppliers()
     table = PrettyTable(["Supplier's Name", "Supplier's Contact"])
@@ -158,7 +158,7 @@ def get_all_suppliers():
 
 def write_order():
     """Write an order and write it in a file."""
-    id = input("Enter id of item whose order is to be written. ")
+    id = input("Enter id of item whose order is to be written: ")
 
     item = session.query(Item).filter_by(id = id).first()
     if not item :
@@ -170,7 +170,7 @@ def write_order():
     for supplier in suppliers:
         print(f"id: {supplier.id}, name: {supplier.name}")
 
-    orders = input("Enter oder in the format <id:quantity, id:quantity>: ")
+    orders = input("Enter order in the format <id:quantity, id:quantity>: ")
     supply_orders = [(int(supplier_id), int(quantity))
                     for supplier_id, quantity in (pair.split(':') for pair in orders.split(','))
                     ]
@@ -191,7 +191,7 @@ def write_order():
 
 def item_category():
     """Get an item's category"""
-    id = input("Enter id of item to get it's category. ")
+    id = input("Enter id of item to get it's category: ")
     item = session.query(Item).filter_by(id = id).first()
     print(f"{Fore.YELLOW}id: {item.id} name: {item.name} category: {item.category.name}")
 
@@ -229,7 +229,7 @@ def generate_inventory_report():
 
 def update_item_by_id():
     """Update an item's details by entering it's ID"""
-    id = input("Enter id of item to be updated. ")
+    id = input("Enter id of item to be updated: ")
     item = session.query(Item).filter_by(id = id).first()
 
     if item:
