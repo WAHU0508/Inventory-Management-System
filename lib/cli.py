@@ -33,7 +33,7 @@ def main():
 
         elif choice == '2':
             while True:
-                print("ADD, UPDATE OR DELETE AN ITEM>")
+                print("\nADD, UPDATE OR DELETE AN ITEM:")
                 print("    0. Back to previous menu")
                 print("    1. Add new item")
                 print("    2. Update an item")
@@ -47,7 +47,7 @@ def main():
                     update_item_by_id()
                 elif choice == "3":
                     while True:
-                        print("DELETE ITEM BY NAME OR BY ID:")
+                        print("\nDELETE ITEM BY NAME OR BY ID:")
                         print("    0. Back to previous menu")
                         print("    1. Delete by name")
                         print("    2. Delete by id")
@@ -65,7 +65,7 @@ def main():
 
         elif choice == '3':
             while True:
-                print("GET AN ITEM'S STOCK LEVEL:")
+                print("\nGET AN ITEM'S STOCK LEVEL:")
                 print("    0. Back to previous menu")
                 print("    1. Get stock level by item name")
                 print("    2. Get stock level by item id")
@@ -80,7 +80,7 @@ def main():
                     print("Invalid choice.")
         elif choice == '4':
             while True:
-                print("UPDATE AN ITEM'S STOCK LEVEL:")
+                print("\nUPDATE AN ITEM'S STOCK LEVEL:")
                 print("    0. Back to previous menu")
                 print("    1. Increase stocks")
                 print("    2. Decrease stocks")
@@ -95,7 +95,7 @@ def main():
                     print("Invalid choice.")
         elif choice == '5':
             while True:
-                print("SUPPLIERS MENU")
+                print("\nSUPPLIERS MENU:")
                 print("    0. Back to previous menu")
                 print("    1. Check an item's suppliers")
                 print("    2. Get all suppliers")
@@ -110,7 +110,7 @@ def main():
                     print("Invalid choice.")     
         elif choice == '6':
             while True:
-                print("CATEGORY MENU:")
+                print("\nCATEGORY MENU:")
                 print("    0. Back to previous menu")
                 print("    1. Check an item's category")
                 print("    2. Check items in a category")
@@ -131,7 +131,7 @@ def main():
             print("Invalid Choice.")
 
 def menu():
-    print("Please select an option: ")
+    print("\nPlease select an option: ")
     print("0. Exit the program.")
     print("1. List all the items.")
     print("2. Add, update or delete item.")
