@@ -33,11 +33,11 @@ def list_items():
 
 def add_item():
     """"Create a new item and give it a category and a supplier"""
-    name = input("    Enter the name of the new item: ")
+    name = input("    Enter the name of the new item: ").title()
     price = input("    Enter the price of the new item: ")
     category_name = input("    Enter the category name of the new item: ")
     quantity = input("    Enter the quantity of the new item: ")
-    supplier_name = input("    Enter the supplier name of the new item: ")
+    supplier_name = input("    Enter the supplier name of the new item: ").title()
     supplier = session.query(Supplier).filter_by(name = supplier_name).first()
     
     if not supplier:
@@ -59,7 +59,7 @@ def add_item():
 
 def delete_item_by_name():
     """Delete an item by it's name"""
-    name = input("    Enter the name of the item to be deleted: ")
+    name = input("    Enter the name of the item to be deleted: ").title()
     item_to_be_deleted = session.query(Item).filter_by(name = name).first()
     if item_to_be_deleted:
         confirmation = input(f"Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
@@ -87,7 +87,7 @@ def delete_item_by_id():
 
 def get_stock_level_by_name():
     """Get item stocklevel by name"""
-    name = input("    Enter the item_name to get it's stock level: ")
+    name = input("    Enter the item_name to get it's stock level: ").title()
     item = session.query(Item).filter_by(name = name).first()
     stocks = session.query(StockLevel).filter_by(item_id = item.id).first()
     if item:
