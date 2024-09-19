@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 from models import Item, Category, StockLevel, Supplier
@@ -12,6 +12,7 @@ if __name__ == '__main__':
     session.query(Category).delete()
     session.query(StockLevel).delete()
     session.query(Supplier).delete()
+    session.execute(text('DELETE FROM item_suppliers'))
 
     categories = [
         Category(name = 'Electronics'),
@@ -72,5 +73,7 @@ if __name__ == '__main__':
     items[4].suppliers.append(suppliers[8])
     items[4].suppliers.append(suppliers[9])
     items[5].suppliers.append(suppliers[10])
-
     session.commit()
+
+
+    print("Seeding Done Successfully.")
