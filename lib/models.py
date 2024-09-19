@@ -51,7 +51,6 @@ class Item(Base):
             session.add(new_category)
             session.commit()
             category = new_category
-
         new_item = cls(name = name, price = price, category_id = category.id)
         session.add(new_item)
         session.commit()
@@ -71,14 +70,25 @@ class Item(Base):
             session.delete(item)
             session.delete(stocks_level)
             session.commit()
-            print(f"Item has been deleted")
-        else:
-            print(f"Item not found in database.")
     
     def item_suppliers(self):
         return self.suppliers
     
-    
+    def update_item(self, name=None, price=None, category_id=None):
+        if name is not None:
+            self.name = name
+        if price is not None:
+            self.price = price
+        if category_id is not None:
+            self.category_id = category_id
+        session.commit()
+        print(f"Item ID: {self.id} updated successfully.")
+
+    # def add_supplier_to_item(self, supplier_name, supplier_contact):
+    #     new_supplier = Supplier.add_supplier(supplier_name, supplier_contact)
+    #     self.suppliers.append(new_supplier)
+    #     session.commit()
+
     def __repr__(self):
         return f'<Item: id = {self.id}, ' + \
             f'name = {self.name}, ' + \
@@ -136,7 +146,7 @@ class StockLevel(Base):
         if stocks:
             stocks.quantity -= value
             session.commit()    
- 
+    
 
     def __repr__(self):
         return f'<StockLevel: id = {self.id}, ' + \
@@ -153,8 +163,8 @@ class Supplier(Base):
     items = relationship('Item', secondary=item_supplier, back_populates='suppliers')
 
     @classmethod
-    def add_supplier(self):
-        new_supplier = Supplier(name = 'Shein', contact = '25-360-479')
+    def add_supplier(self, name, contact):
+        new_supplier = Supplier(name = name, contact = contact)
         session.add(new_supplier)
         session.commit()
 

@@ -35,38 +35,69 @@ def add_item():
     price = input("    Enter the price of the new item: ")
     category_name = input("    Enter the category name of the new item: ")
     quantity = input("    Enter the quantity of the new item: ")
+    supplier_name = input("    Enter the supplier name of the new item: ")
+    supplier = session.query(Supplier).filter_by(name = supplier_name).first()
     
+    if not supplier:
+        supplier_contact = input("    Enter the supplier contact of the new item: ")
+        supplier = Supplier(name = supplier_name, contact = supplier_contact)
+        session.add(supplier)
+        session.commit()
+
     Item.add_item(name, price, category_name, quantity)
     new_item = session.query(Item).filter_by(name = name).first()
+    new_item.suppliers.append(supplier)
+    session.commit()
+     
     if new_item:
-        print(f"New Item {name} successfully added!!!")
+        print(f"{Fore.GREEN}New Item {name} successfully added!!!")
     else:
-        print(f"Error adding new item. Please Try Again.")
+        print(f"{Fore.RED}Error adding new item. Please Try Again.")
+    
+
+def new_item_supplier():
+    id = input("Enter id of item to add new supplier: ")
+    supplier_name = input("Enter supplier's name: ")
+    supplier_contact = input("Enter supplier's contact: ")
+    item = session.query(Item).filter_by(id = id).first()
+    if item:
+        item.add_supplier_to_item(supplier_name, supplier_contact)
+        print(f"{Fore.GREEN}Supplier {supplier_name} successfully added to item ID: {item.id}.")
+    else:
+        print(f"{Fore.RED}Item with ID {id} not found.")
 
 def delete_item_by_name():
     name = input("    Enter the name of the item to be deleted: ")
     item_to_be_deleted = session.query(Item).filter_by(name = name).first()
-    confirmation = input(f"Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
-    if confirmation == 'yes':
-        Item.delete_item(item_name = name)
+    if item_to_be_deleted:
+        confirmation = input(f"Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
+        if confirmation == 'yes':
+            Item.delete_item(item_name = name)
+            print(f"{Fore.GREEN}An item has been deleted")
+        else:
+            print(f"{Fore.YELLOW}Deletion Canceled.")
     else:
-        print("Deletion Canceled.")
+        print(f"{Fore.RED} Item with name {name} cannot be found.")
 
 def delete_item_by_id():
     id = input("    Enter the id of the item to be deleted: ")
     item_to_be_deleted = session.query(Item).filter_by(id = id).first()
-    confirmation = input(f"Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
-    if confirmation == 'yes':
-        Item.delete_item(item_id = id)
+    if item_to_be_deleted:
+        confirmation = input(f"Are you sure you want to delete {item_to_be_deleted.name} with id {item_to_be_deleted.id}? (yes/no): ").lower()
+        if confirmation == 'yes':
+            Item.delete_item(item_id = id)
+        else:
+            print(f"{Fore.YELLOW}Deletion Canceled.")
+            print(f"{Fore.GREEN}An item has been deleted")
     else:
-        print("Deletion Canceled.")
+       print(f"{Fore.RED} Item with ID {id} cannot be found.") 
 
 def get_stock_level_by_name():
     name = input("    Enter the item_name to get it's stock level.")
     item = session.query(Item).filter_by(name = name).first()
     stocks = session.query(StockLevel).filter_by(item_id = item.id).first()
     if item:
-        print(f"Item {item.name}, has {stocks.quantity} items in stock.")
+        print(f"{Fore.GREEN}Item {item.name}, has {stocks.quantity} items in stock.")
     else:
         print("Item not found.")
 
@@ -75,7 +106,7 @@ def get_stock_level_by_id():
     item = session.query(Item).filter_by(id = id).first()
     stocks = session.query(StockLevel).filter_by(item_id = id).first()
     if item:
-        print(f"Item {item.name}, has {stocks.quantity} items in stock.")
+        print(f"{Fore.GREEN}Item {item.name}, has {stocks.quantity} items in stock.")
     else:
         print("Item not found.")
 
@@ -92,6 +123,7 @@ def increase_stocks():
     item = session.query(Item).filter_by(id = id).first()
     if item:
         StockLevel.increase_stocks_level(id, int(value))
+        print(f"{Fore.GREEN} Stock level of item<id: {item.id}, name: {item.name}> increased to {[stock.quantity for stock in item.stock_level]}")
 
 def decrease_stocks():
     id = input("Enter the id of item to be updated. ")
@@ -100,6 +132,7 @@ def decrease_stocks():
     stocks = session.query(StockLevel).filter_by(item_id = id).first()
     if item and stocks.quantity > int(value):
         StockLevel.decrease_stocks_level(id, int(value))
+        print(f"{Fore.GREEN} Stock level of item<id: {item.id}, name: {item.name}> decreased to {[(stock.quantity - int(value)) for stock in item.stock_level]}")
     else:
         print(f"{Fore.LIGHTYELLOW_EX}***The order is more than the available stock***")
 
@@ -107,8 +140,10 @@ def get_item_suppliers():
     id = input("Enter the id of item to check it's suppliers. ")
     item = session.query(Item).filter_by(id = id).first()
     suppliers = item.item_suppliers()
+    table = PrettyTable(["Supplier's Name", "Supplier's Contact"])
     for supplier in suppliers:
-        print(f"Supplier's name: {supplier.name} Supplier's contact: {supplier.contact}")
+        table.add_row([supplier.name, supplier.contact])
+    print(table)
 
 def get_all_suppliers():
     suppliers = session.query(Supplier).all()
@@ -119,6 +154,9 @@ def get_all_suppliers():
         table.add_row([supplier.name, supplier.contact])
 
     print(table)
+
+
+
 
 def write_order():
     id = input("Enter id of item whose order is to be written. ")
@@ -153,7 +191,7 @@ def write_order():
 def item_category():
     id = input("Enter id of item to get it's category. ")
     item = session.query(Item).filter_by(id = id).first()
-    print(f"id: {item.id} name: {item.name} category: {item.category.name}")
+    print(f"{Fore.YELLOW}id: {item.id} name: {item.name} category: {item.category.name}")
 
 def category_items():
     name = input("Enter name of category to get items. ")
@@ -161,7 +199,7 @@ def category_items():
     items = category.items
     print(f"Items in the {category.name} category")
     for item in items:
-        print(f"id: {item.id} name: {item.name} price: {item.price}")
+        print(f"{Fore.YELLOW}id: {item.id} name: {item.name} price: {item.price}")
 
 def generate_inventory_report():
     items = session.query(Item).options(
@@ -184,3 +222,21 @@ def generate_inventory_report():
 
     with open("report.txt", "w") as report_file:
         report_file.write(str(table))
+
+def update_item_by_id():
+    id = input("Enter id of item to be updated. ")
+    item = session.query(Item).filter_by(id = id).first()
+
+    if item:
+        print(f"{Fore.LIGHTGREEN_EX} Updating item with ID {id}...")
+        new_name = input("Enter new name of the item (leave blank to keep current name): ")
+        new_price = input("Enter new price of the item (leave blank to keep current price): ")
+        new_category_id = input("Enter new category_id of the item (leave blank to keep current category_id): ")
+
+        new_name = new_name if new_name else None
+        new_price = float(new_price) if new_price else None
+        new_category_id = int(new_category_id) if new_category_id else None
+
+        item.update_item(name = new_name, price = new_price, category_id = new_category_id)
+    else:
+        print(f"{Fore.RED}Item with ID {id} not found.")
