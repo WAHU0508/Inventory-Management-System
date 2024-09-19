@@ -1,8 +1,9 @@
 from models import Item, Category, StockLevel, Supplier
 from prettytable import PrettyTable
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 from colorama import Fore, Style, init
+import os
 
 engine = create_engine('sqlite:///inventories.db')
 Session = sessionmaker(bind=engine)
@@ -122,16 +123,36 @@ def get_all_suppliers():
 def write_order():
     id = input("Enter id of item whose order is to be written. ")
     item = session.query(Item).filter_by(id = id).first()
+    if not item :
+        print(f"Item with ID {id} not found.")
+
     suppliers = item.suppliers
     print(f"item: {item.name}, id: {item.id} has suppliers:")
     for supplier in suppliers:
         print(f"id: {supplier.id}, name: {supplier.name}")
+
     orders = input("Enter oder in the format <id:quantity, id:quantity>: ")
-    supply_order = [(int(supplier_id), int(quantity))
+    supply_orders = [(int(supplier_id), int(quantity))
                     for supplier_id, quantity in (pair.split(':') for pair in orders.split(','))
                     ]
-    item.write_order_if_stock_low(supply_order)
-    print("The order has successfully been written!!!!")
+    table = PrettyTable()
+    table.field_names = ["Item ID", "Item Name", "Supplier_name", "Supplier_Contact", "Order Quantity"]
+    if os.path.exists('orders.txt'):
+        with open('orders.txt', 'r') as order_file:
+            existing_data = order_file.read()
+            if existing_data.strip():
+                table = PrettyTable(existing_data.splitlines()[1].split())
+    for supplier_id, quantity in supply_orders:
+        for supplier in item.suppliers:
+            if supplier_id == supplier.id:
+                table.add_row([item.id, item.name, supplier.name, supplier.contact, quantity])
+    
+    with open('orders.txt', 'a') as order_file:
+        order_file.write(str(table) + "\n")
+    
+    print(table)
+
+write_order()
 
 def item_category():
     id = input("Enter id of item to get it's category. ")
@@ -145,3 +166,25 @@ def category_items():
     print(f"Items in the {category.name} category")
     for item in items:
         print(f"id: {item.id} name: {item.name} price: {item.price}")
+
+def generate_inventory_report():
+    items = session.query(Item).options(
+        joinedload(Item.category),
+        joinedload(Item.stock_level),
+        joinedload(Item.suppliers)
+    ).all()
+
+    table = PrettyTable()
+    table.field_names = ["Item ID", "Item Name", "Price", "Category", "Stock Level", "Suppliers", "Last Updated"]
+
+    for item in items:
+        category_name = item.category.name if item.category else "N/A"
+        stock_level = item.stock_level[0].quantity if item.stock_level else  "N/A"
+        suppliers = ", ".join([supplier.name for supplier in item.suppliers]) if item.suppliers else "N/A"
+        last_updated = item.stock_level[0].updated_at.strftime("%Y-%m-%d %H:%M") if item.stock_level else "N/A"
+
+        table.add_row([item.id, item.name, item.price, category_name, stock_level, suppliers, last_updated])
+    print(table)
+
+    with open("report.txt", "w") as report_file:
+        report_file.write(str(table))

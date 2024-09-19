@@ -1,5 +1,7 @@
-Order for Laptop from Lenovo contact: '25-330-479' - 50 pieces
-Order for Laptop from HP contact: '25-360-579' - 20 pieces
-Order for Blender from Al Yassin contact: '25-250-479' - 30 pieces
-Order for Blender from Samsung contact: '25-240-479' - 10 pieces
-Order for Teddy Bear from Zoey Kids contact: '25-230-479' - 7 pieces
+
++---------+-----------+---------------+------------------+----------------+
+| Item ID | Item Name | Supplier_name | Supplier_Contact | Order Quantity |
++---------+-----------+---------------+------------------+----------------+
+|    2    |   Laptop  |     Lenovo    |    25-330-479    |       10       |
+|    2    |   Laptop  |       HP      |    25-360-579    |      100       |
++---------+-----------+---------------+------------------+----------------+
