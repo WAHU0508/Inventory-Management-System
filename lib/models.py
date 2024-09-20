@@ -80,17 +80,17 @@ class Item(Base):
         """get an item's suppliers"""
         return self.suppliers
     
-    def update_item(self, name=None, price=None, category_id=None):
+    @classmethod
+    def update_item(cls, item_id, new_name=None, new_price=None, new_category_id=None):
         """Update an item's name, price or category id"""
-        if name is not None:
-            self.name = name
-        if price is not None:
-            self.price = price
-        if category_id is not None:
-            self.category_id = category_id
+        item = session.query(cls).filter_by(id = item_id).first()
+        if new_name is not None:
+            item.name = new_name
+        if new_price is not None:
+            item.price = new_price
+        if new_category_id is not None:
+            item.category_id = new_category_id
         session.commit()
-        print(f"Item ID: {self.id} updated successfully.")
-
 
     def __repr__(self):
         return f'<Item: id = {self.id}, ' + \
@@ -141,7 +141,7 @@ class StockLevel(Base):
         return low_stocked_items
     
     @classmethod
-    def increase_stocks_level(cls, item_id, value = 0):
+    def increase_stocks_level(cls, item_id, value):
         """Increase stocks of item by a given value"""
         stocks = session.query(cls).filter_by(item_id = item_id).first()
         if stocks:
@@ -149,7 +149,7 @@ class StockLevel(Base):
             session.commit()
 
     @classmethod
-    def decrease_stocks_level(cls, item_id, value = 0):
+    def decrease_stocks_level(cls, item_id, value):
         """Decrease stocks of item by a given value"""
         stocks = session.query(cls).filter_by(item_id = item_id).first()
         if stocks:

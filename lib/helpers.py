@@ -234,14 +234,15 @@ def update_item_by_id():
 
     if item:
         print(f"{Fore.LIGHTGREEN_EX} Updating item with ID {id}...")
-        new_name = input("Enter new name of the item (leave blank to keep current name): ")
-        new_price = input("Enter new price of the item (leave blank to keep current price): ")
+        new_name = input("Enter new name of the item (leave blank to keep current name): ").title()
+        new_price = input("Enter new price of the item (leave blank to keep current price): ").title()
         new_category_id = input("Enter new category_id of the item (leave blank to keep current category_id): ")
 
         new_name = new_name if new_name else None
         new_price = float(new_price) if new_price else None
         new_category_id = int(new_category_id) if new_category_id else None
 
-        item.update_item(name = new_name, price = new_price, category_id = new_category_id)
+        item.update_item(item_id = id, new_name = new_name, new_price = new_price, new_category_id = new_category_id)
+        print(f"{Fore.GREEN}Item successfully updated!")
     else:
         print(f"{Fore.RED}Item with ID {id} not found.")
