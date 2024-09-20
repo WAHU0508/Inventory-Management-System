@@ -3,7 +3,6 @@ from prettytable import PrettyTable
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, joinedload
 from colorama import Fore, Style, init
-import os
 
 engine = create_engine('sqlite:///inventories.db')
 Session = sessionmaker(bind=engine)
@@ -12,7 +11,7 @@ session = Session()
 init(autoreset=True)
 
 def heading():
-    print(f"{Fore.CYAN}                                          AMAZON WAREHOUSE INVENTORY MANAGEMENT SYSTEM")
+    print(f"\n{Fore.CYAN}                                          AMAZON WAREHOUSE INVENTORY MANAGEMENT SYSTEM")
     print("------------------------------------------------------------------------------------------------------------------------\n")
 
 def exit_program():
@@ -91,9 +90,9 @@ def get_stock_level_by_name():
     item = session.query(Item).filter_by(name = name).first()
     stocks = session.query(StockLevel).filter_by(item_id = item.id).first()
     if item:
-        print(f"{Fore.GREEN}Item {item.name}, has {stocks.quantity} items in stock.")
+        print(f"{Fore.YELLOW}Item {item.name}, has {stocks.quantity} items in stock.")
     else:
-        print("Item not found.")
+        print(f"{Fore.RED}Item not found.")
 
 def get_stock_level_by_id():
     """Get item's stocklevel by entering it's ID"""
@@ -101,7 +100,7 @@ def get_stock_level_by_id():
     item = session.query(Item).filter_by(id = id).first()
     stocks = session.query(StockLevel).filter_by(item_id = id).first()
     if item:
-        print(f"{Fore.GREEN}Item {item.name}, has {stocks.quantity} items in stock.")
+        print(f"{Fore.YELLOW}Item {item.name}, has {stocks.quantity} items in stock.")
     else:
         print("Item not found.")
 
@@ -120,7 +119,7 @@ def increase_stocks():
     item = session.query(Item).filter_by(id = id).first()
     if item:
         StockLevel.increase_stocks_level(id, int(value))
-        print(f"{Fore.GREEN} Stock level of item<id: {item.id}, name: {item.name}> increased to {[stock.quantity for stock in item.stock_level]}")
+        print(f"{Fore.LIGHTCYAN_EX} Stock level of item <id: {item.id}, name: {item.name}> increased to {[stock.quantity for stock in item.stock_level][0]}")
 
 def decrease_stocks():
     """Decrease an item's stocks"""
@@ -130,9 +129,9 @@ def decrease_stocks():
     stocks = session.query(StockLevel).filter_by(item_id = id).first()
     if item and stocks.quantity > int(value):
         StockLevel.decrease_stocks_level(id, int(value))
-        print(f"{Fore.GREEN} Stock level of item<id: {item.id}, name: {item.name}> decreased to {[(stock.quantity - int(value)) for stock in item.stock_level]}")
+        print(f"{Fore.LIGHTCYAN_EX} Stock level of item <id: {item.id}, name: {item.name}> decreased to {[(stock.quantity - int(value)) for stock in item.stock_level][0]}")
     else:
-        print(f"{Fore.LIGHTYELLOW_EX}***The order is more than the available stock***")
+        print(f"{Fore.RED}***The order is more than the available stock***")
 
 def get_item_suppliers():
     """Get an item's suppliers"""
@@ -162,7 +161,7 @@ def write_order():
 
     item = session.query(Item).filter_by(id = id).first()
     if not item :
-        print(f"Item with ID {id} not found.")
+        print(f"{Fore.RED}Item with ID {id} not found.")
         return
 
     suppliers = item.suppliers
@@ -170,7 +169,7 @@ def write_order():
     for supplier in suppliers:
         print(f"id: {supplier.id}, name: {supplier.name}")
 
-    orders = input("Enter order in the format <id:quantity, id:quantity>: ")
+    orders = input("Enter order in the format < supplier_id:quantity, supplier_id:quantity, .... >: ")
     supply_orders = [(int(supplier_id), int(quantity))
                     for supplier_id, quantity in (pair.split(':') for pair in orders.split(','))
                     ]
@@ -188,6 +187,7 @@ def write_order():
         text = f"An order for <id: {item.id} name: {item.name}>"
         order_file.write(text.upper() + "\n")
         order_file.write(table.get_string() + "\n" + "\n")
+        print(f"{Fore.LIGHTBLUE_EX}The order has been written.")
 
 def item_category():
     """Get an item's category"""
@@ -225,7 +225,9 @@ def generate_inventory_report():
     print(table)
 
     with open("report.txt", "w") as report_file:
-        report_file.write(str(table))
+        heading = "REPORT\n"
+        report_file.write(heading + str(table))
+        print(f"{Fore.LIGHTBLUE_EX}The report has been generated.")
 
 def update_item_by_id():
     """Update an item's details by entering it's ID"""

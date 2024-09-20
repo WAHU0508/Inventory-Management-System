@@ -62,38 +62,7 @@ def main():
                             print("Invalid choice.")
                 else:
                     print("Invalid choice.")
-
         elif choice == '3':
-            while True:
-                print("\nGET AN ITEM'S STOCK LEVEL:")
-                print("    0. Back to previous menu")
-                print("    1. Get stock level by item name")
-                print("    2. Get stock level by item id")
-                choice = input(">>>> ")
-                if choice == "0":
-                    break
-                elif choice == "1":
-                    get_stock_level_by_name()
-                elif choice == "2":
-                    get_stock_level_by_id()
-                else:
-                    print("Invalid choice.")
-        elif choice == '4':
-            while True:
-                print("\nUPDATE AN ITEM'S STOCK LEVEL:")
-                print("    0. Back to previous menu")
-                print("    1. Increase stocks")
-                print("    2. Decrease stocks")
-                choice = input(">>>> ")
-                if choice == "0":
-                    break
-                elif choice == '1':
-                    increase_stocks()
-                elif choice == '2':
-                    decrease_stocks()
-                else:
-                    print("Invalid choice.")
-        elif choice == '5':
             while True:
                 print("\nSUPPLIERS MENU:")
                 print("    0. Back to previous menu")
@@ -108,7 +77,7 @@ def main():
                     get_all_suppliers()
                 else:
                     print("Invalid choice.")     
-        elif choice == '6':
+        elif choice == '4':
             while True:
                 print("\nCATEGORY MENU:")
                 print("    0. Back to previous menu")
@@ -123,8 +92,40 @@ def main():
                     category_items()
                 else:
                     print("Invalid choice.")
-        elif choice == '7':
+        elif choice == '5':
+            while True:
+                print("\nGET AN ITEM'S STOCK LEVEL:")
+                print("    0. Back to previous menu")
+                print("    1. Get stock level by item name")
+                print("    2. Get stock level by item id")
+                choice = input(">>>> ")
+                if choice == "0":
+                    break
+                elif choice == "1":
+                    get_stock_level_by_name()
+                elif choice == "2":
+                    get_stock_level_by_id()
+                else:
+                    print("Invalid choice.")
+        elif choice == '6':
             write_order()
+
+        elif choice == '7':
+            while True:
+                print("\nUPDATE AN ITEM'S STOCK LEVEL:")
+                print("    0. Back to previous menu")
+                print("    1. Increase stocks")
+                print("    2. Decrease stocks")
+                choice = input(">>>> ")
+                if choice == "0":
+                    break
+                elif choice == '1':
+                    increase_stocks()
+                elif choice == '2':
+                    decrease_stocks()
+                else:
+                    print("Invalid choice.")
+    
         elif choice == '8':
             generate_inventory_report()
         else:
@@ -135,11 +136,11 @@ def menu():
     print("0. Exit the program.")
     print("1. List all the items.")
     print("2. Add, update or delete item.")
-    print("3. Get item's stock level.")
-    print("4. Update stocks.")
-    print("5. Suppliers menu.")
-    print("6. Category menu.")
-    print("7. Write order.")
+    print("3. Suppliers menu.")
+    print("4. Category menu.")
+    print("5. Get item's stock level.")
+    print("6. Write order.")
+    print("7. Update stocks.")
     print("8. Generate Inventory Report.")
 
 if __name__ == "__main__":
